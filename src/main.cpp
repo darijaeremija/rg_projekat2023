@@ -169,7 +169,8 @@ int main() {
 
     // load models
     // -----------
-    Model ourModel("resources/objects/backpack/backpack.obj");
+    //Model ourModel("resources/objects/gull/GULL.OBJ");
+    Model ourModel("resources/objects/Tree1/Tree1.obj");
     ourModel.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
@@ -244,15 +245,27 @@ int main() {
     //load skbybox
     //stbi_set_flip_vertically_on_load(true);
 
+    //vector<std::string> faces
+      //      {
+        //            FileSystem::getPath("/resources/textures/skybox/left.jpg"),
+        //            FileSystem::getPath("/resources/textures/skybox/right.jpg"),
+         //           FileSystem::getPath("/resources/textures/skybox/top.jpg"),
+          //          FileSystem::getPath("/resources/textures/skybox/down.jpg"),
+            //        FileSystem::getPath("/resources/textures/skybox/front.jpg"),
+             //       FileSystem::getPath("/resources/textures/skybox/back.jpg")
+            //};
+    stbi_set_flip_vertically_on_load(false);
     vector<std::string> faces
-            {
-                    FileSystem::getPath("/resources/textures/skybox/left.jpg"),
-                    FileSystem::getPath("/resources/textures/skybox/right.jpg"),
-                    FileSystem::getPath("/resources/textures/skybox/top.jpg"),
-                    FileSystem::getPath("/resources/textures/skybox/down.jpg"),
-                    FileSystem::getPath("/resources/textures/skybox/front.jpg"),
-                    FileSystem::getPath("/resources/textures/skybox/back.jpg")
-            };
+          {
+                FileSystem::getPath("/resources/textures/PereaBeach2/posx.jpg"),
+                FileSystem::getPath("/resources/textures/PereaBeach2/negx.jpg"),
+                FileSystem::getPath("/resources/textures/PereaBeach2/posy.jpg"),
+                FileSystem::getPath("/resources/textures/PereaBeach2/negy.jpg"),
+                FileSystem::getPath("/resources/textures/PereaBeach2/posz.jpg"),
+                FileSystem::getPath("/resources/textures/PereaBeach2/negz.jpg")
+    };
+
+
     unsigned int cubemapTexture = loadCubemap(faces);
 
 
@@ -302,7 +315,7 @@ int main() {
                                programState->backpackPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        //ourModel.Draw(ourShader);
+        ourModel.Draw(ourShader);
 
         glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
@@ -400,7 +413,7 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("Hello text");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition);
+        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition); //0.1 4.0
         ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);

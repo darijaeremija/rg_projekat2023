@@ -1,0 +1,22 @@
+# Wavefront material library
+# Tue Aug 03 07:54:36 1999
+# Created with Viewpoint Interchange www.viewpoint.com
+
+newmtl gull_body
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.0 0.0 0.0
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd GULL.JPG
+
+
+newmtl gull_eye
+  Ka 0 0 0
+  Kd 0.0901961 0.0941176 0.117647
+  Ks 0.0901961 0.0941176 0.117647
+  illum 2
+
