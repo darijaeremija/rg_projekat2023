@@ -179,7 +179,7 @@ int main() {
     // load models
     // -----------
     //Model ourModel("resources/objects/gull/GULL.OBJ");
-    Model ourModel("resources/objects/palma/CoconutPalm.obj");
+    Model ourModel("resources/objects/backpack/backpack.obj");
     //dodaj i rotiraj dve lezaljke
     Model table("resources/objects/Table/Table.obj");
     Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
@@ -297,7 +297,10 @@ int main() {
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+
+        //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+
+
         ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -322,7 +325,7 @@ int main() {
                                programState->backpackPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        //ourModel.Draw(ourShader);
+        ourModel.Draw(ourShader);
 
         //sun
         model = glm::mat4(1.0f);
