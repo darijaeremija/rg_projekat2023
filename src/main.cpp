@@ -61,6 +61,14 @@ struct ProgramState {
     bool CameraMouseMovementUpdateEnabled = true;
     glm::vec3 backpackPosition = glm::vec3(0.0f);
     float backpackScale = 1.0f;
+
+    glm::vec3 sunPosition = glm::vec3(-45.0f,10.0f,3.0f);
+    float sunScale = 0.2f;
+
+
+    glm::vec3 shipPosition = glm::vec3(-45.0f,-10.0f,3.0f);
+    float shipScale = 0.2f;
+
     PointLight pointLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
@@ -118,7 +126,7 @@ int main() {
 
     // glfw window creation
     // --------------------
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "beach", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -167,12 +175,21 @@ int main() {
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
+
     // load models
     // -----------
     //Model ourModel("resources/objects/gull/GULL.OBJ");
-    Model ourModel("resources/objects/Tree1/Tree1.obj");
-    ourModel.SetShaderTextureNamePrefix("material.");
+    Model ourModel("resources/objects/palma/CoconutPalm.obj");
+    //dodaj i rotiraj dve lezaljke
+    Model table("resources/objects/Table/Table.obj");
+    Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
+    Model ship("resources/objects/ship/ship.obj");
+    Model suncobran("resources/objects/suncobran/suncobran.obj");
 
+    ourModel.SetShaderTextureNamePrefix("material.");
+    sun.SetShaderTextureNamePrefix("material.");
+    ship.SetShaderTextureNamePrefix("material.");
+    suncobran.SetShaderTextureNamePrefix("material.");
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
     pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
@@ -232,7 +249,7 @@ int main() {
             -1.0f, -1.0f,  1.0f,
             1.0f, -1.0f,  1.0f
     };
-
+    //skybox
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -242,18 +259,6 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    //load skbybox
-    //stbi_set_flip_vertically_on_load(true);
-
-    //vector<std::string> faces
-      //      {
-        //            FileSystem::getPath("/resources/textures/skybox/left.jpg"),
-        //            FileSystem::getPath("/resources/textures/skybox/right.jpg"),
-         //           FileSystem::getPath("/resources/textures/skybox/top.jpg"),
-          //          FileSystem::getPath("/resources/textures/skybox/down.jpg"),
-            //        FileSystem::getPath("/resources/textures/skybox/front.jpg"),
-             //       FileSystem::getPath("/resources/textures/skybox/back.jpg")
-            //};
     stbi_set_flip_vertically_on_load(false);
     vector<std::string> faces
           {
@@ -309,14 +314,49 @@ int main() {
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
+
+
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
                                programState->backpackPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
+        //ourModel.Draw(ourShader);
 
+        //sun
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-45.0f,10.0f,3.0f));
+        model = glm::scale(model, glm::vec3(programState->sunScale));
+        ourShader.setMat4("model", model);
+        sun.Draw(ourShader);
+
+        //ship
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               programState->shipPosition);
+        model = glm::scale(model, glm::vec3(programState->shipScale));
+        ourShader.setMat4("model", model);
+        ship.Draw(ourShader);
+
+        //suncobran
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(0.0f,-6.0f,3.0f));
+        model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
+        ourShader.setMat4("model", model);
+        suncobran.Draw(ourShader);
+
+        //table
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(0.0f,-8.0f,-4.0f));
+        model = glm::scale(model, glm::vec3(0.02f,0.02f,0.02f));
+        ourShader.setMat4("model", model);
+        table.Draw(ourShader);
+
+        //skybox
         glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
         view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix()));// remove translation from the view matrix
@@ -359,13 +399,15 @@ void processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(FORWARD, deltaTime);
+        programState->camera.ProcessMouseMovement(0.0, 10.0);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(BACKWARD, deltaTime);
+        programState->camera.ProcessMouseMovement(0.0, -10.0);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(LEFT, deltaTime);
+        programState->camera.ProcessMouseMovement(-10.0, 0.0);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(RIGHT, deltaTime);
+        programState->camera.ProcessMouseMovement(10.0, 0.0);
+
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -446,6 +488,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
+
 }
 unsigned int loadCubemap(vector<std::string> faces)
 {

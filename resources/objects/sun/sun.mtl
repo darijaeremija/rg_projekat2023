@@ -1,0 +1,13 @@
+newmtl sunmtl
+
+d 1.000000
+illum 2
+map_Kd sun.jpg
+
+    glm::vec3 dirLight_dir = glm::vec3(-0.547f, -0.727f, 0.415f);
+    glm::vec3 dirLight_settings = glm::vec3(0.35f, 0.4f,0.2f);
+    glm::vec3 clearColor = glm::vec3(0);
+
+    glm::vec3 vecCalibrate = glm::vec3(0.0f);
+    glm::vec3 vecRotate = glm::vec3(0.0f);
+    float fineCalibrate = 0.001f;
