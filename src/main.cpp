@@ -67,7 +67,7 @@ struct ProgramState {
 
 
     glm::vec3 shipPosition = glm::vec3(-45.0f,-10.0f,3.0f);
-    float shipScale = 0.2f;
+    float shipScale = 1.0f;
 
     PointLight pointLight;
     ProgramState()
@@ -175,12 +175,12 @@ int main() {
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
 
-
     // load models
     // -----------
     //Model ourModel("resources/objects/gull/GULL.OBJ");
     Model ourModel("resources/objects/backpack/backpack.obj");
     //dodaj i rotiraj dve lezaljke
+    Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
     Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
     Model ship("resources/objects/ship/ship.obj");
@@ -297,14 +297,13 @@ int main() {
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
+        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
 
-        //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
 
-
-        ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
         ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
         ourShader.setVec3("pointLight.specular", pointLight.specular);
+        ourShader.setVec3("pointLight.position", pointLight.position);
         ourShader.setFloat("pointLight.constant", pointLight.constant);
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
@@ -317,15 +316,13 @@ int main() {
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
-
-
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
                                programState->backpackPosition); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
+        //ourModel.Draw(ourShader);
 
         //sun
         model = glm::mat4(1.0f);
@@ -338,15 +335,17 @@ int main() {
         //ship
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               programState->shipPosition);
-        model = glm::scale(model, glm::vec3(programState->shipScale));
+                               glm::vec3(60,-8,50));
+        model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
+
+        model = glm::scale(model, glm::vec3(0.4f));
         ourShader.setMat4("model", model);
         ship.Draw(ourShader);
 
         //suncobran
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(0.0f,-6.0f,3.0f));
+                               glm::vec3(3.5f,-7.0f,3.0f));
         model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
         ourShader.setMat4("model", model);
         suncobran.Draw(ourShader);
@@ -354,10 +353,29 @@ int main() {
         //table
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(0.0f,-8.0f,-4.0f));
+                               glm::vec3(1.0f,-9.0f,0.0f));
+
         model = glm::scale(model, glm::vec3(0.02f,0.02f,0.02f));
         ourShader.setMat4("model", model);
         table.Draw(ourShader);
+
+        //lezaljka
+        model = glm::mat4(1.0f);
+
+        model = glm::translate(model,
+                               glm::vec3(0.0f,-10.0f,-4.0f));
+        model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
+        model = glm::scale(model, glm::vec3(3.0f));
+        ourShader.setMat4("model", model);
+        lezaljka.Draw(ourShader);
+
+        //lezaljka2
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(5.0f,-10.0f,-4.0f));
+        model = glm::scale(model, glm::vec3(3.0f));
+        ourShader.setMat4("model", model);
+        lezaljka.Draw(ourShader);
 
         //skybox
         glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
