@@ -177,26 +177,30 @@ int main() {
 
     // load models
     // -----------
-    //Model ourModel("resources/objects/gull/GULL.OBJ");
     Model ourModel("resources/objects/backpack/backpack.obj");
-    //dodaj i rotiraj dve lezaljke
+    Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
     Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
-
+    Model ball("resources/objects/Beach_Ball/13517_Beach_Ball_v2_L3.obj");
 
     //DODAVANJE PREFIKSA !!!
     ourModel.SetShaderTextureNamePrefix("material.");
     sun.SetShaderTextureNamePrefix("material.");
     ship.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
+    ball.SetShaderTextureNamePrefix("material.");
+    lezaljka.SetShaderTextureNamePrefix("material.");
+    table.SetShaderTextureNamePrefix("material.");
+    tree.SetShaderTextureNamePrefix("material.");
+
     PointLight& pointLight = programState->pointLight;
-    pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
+    pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
     pointLight.ambient = glm::vec3(0.7, 0.7, 0.7);
-    pointLight.diffuse = glm::vec3(1, 1, 1);
-    pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
+    pointLight.diffuse = glm::vec3(0.4, 0.4, 1);
+    pointLight.specular = glm::vec3(1.0, 0.1, 0.1);
 
     pointLight.constant = 1.0f;
     pointLight.linear = 0.09f;
@@ -310,7 +314,8 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 2.0f);
+        ourShader.setFloat("material.shininess", 128.0f);
+        ourShader.setFloat("material.shininess", 128.0f);
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
@@ -322,6 +327,8 @@ int main() {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
                                programState->backpackPosition); // translate it down so it's at the center of the scene
+        //model = glm::rotate(model,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
+
         model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         //ourModel.Draw(ourShader);
@@ -332,7 +339,7 @@ int main() {
                                glm::vec3(-45.0f,10.0f,3.0f));
         model = glm::scale(model, glm::vec3(programState->sunScale));
         ourShader.setMat4("model", model);
-        sun.Draw(ourShader);
+        //sun.Draw(ourShader); mozda suvisno?
 
         //ship
         model = glm::mat4(1.0f);
@@ -340,24 +347,24 @@ int main() {
                                glm::vec3(60,-8,50));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
 
-        model = glm::scale(model, glm::vec3(0.4f));
+        model = glm::scale(model, glm::vec3(0.5f));
         ourShader.setMat4("model", model);
         ship.Draw(ourShader);
 
         //suncobran
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(3.5f,-7.0f,3.0f));
-        model = glm::scale(model, glm::vec3(1.0f,1.0f,1.0f));
+                               glm::vec3(0.3f,-7.0f,3.0f));
+        model = glm::scale(model, glm::vec3(2.0f,2.0f,2.0f));
         ourShader.setMat4("model", model);
         suncobran.Draw(ourShader);
 
         //table
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(1.0f,-9.0f,0.0f));
+                               glm::vec3(-1.25f,-9.0f,0.0f));
 
-        model = glm::scale(model, glm::vec3(0.02f,0.02f,0.02f));
+        model = glm::scale(model, glm::vec3(0.04f,0.04f,0.04f));
         ourShader.setMat4("model", model);
         table.Draw(ourShader);
 
@@ -365,9 +372,9 @@ int main() {
         model = glm::mat4(1.0f);
 
         model = glm::translate(model,
-                               glm::vec3(0.0f,-10.0f,-4.0f));
+                               glm::vec3(-5.0f,-10.0f,-4.0f));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
-        model = glm::scale(model, glm::vec3(3.0f));
+        model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
         lezaljka.Draw(ourShader);
 
@@ -375,9 +382,47 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(5.0f,-10.0f,-4.0f));
-        model = glm::scale(model, glm::vec3(3.0f));
+        model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
         lezaljka.Draw(ourShader);
+
+        //ball
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-8.0f,-8.0f,-8.0f));
+        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        model = glm::scale(model, glm::vec3(0.04f));
+        ourShader.setMat4("model", model);
+        ball.Draw(ourShader);
+
+        //tree
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-19.0f,-6.0f,0.0f));
+        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        model = glm::scale(model, glm::vec3(2.0f));
+        ourShader.setMat4("model", model);
+        tree.Draw(ourShader);
+
+        //tree2
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-19.0f,-6.0f,3.5f));
+        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        model = glm::scale(model, glm::vec3(2.0f));
+        ourShader.setMat4("model", model);
+        tree.Draw(ourShader);
+
+        //tree 3
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-19.0f,-6.0f,7.0f));
+        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        model = glm::scale(model, glm::vec3(2.0f));
+        ourShader.setMat4("model", model);
+        tree.Draw(ourShader);
+
+
 
         //skybox
         glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
