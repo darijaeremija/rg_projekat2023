@@ -65,9 +65,10 @@ struct ProgramState {
     glm::vec3 sunPosition = glm::vec3(-45.0f,10.0f,3.0f);
     float sunScale = 0.2f;
 
+    glm::vec3 ballPosition =glm::vec3(-14.0f,-8.0f,0.0f);
 
     glm::vec3 shipPosition = glm::vec3(-45.0f,-10.0f,3.0f);
-    float shipScale = 1.0f;
+    float shipScale = 0.8f;
 
     PointLight pointLight;
     ProgramState()
@@ -174,20 +175,20 @@ int main() {
     // -------------------------
     Shader ourShader("resources/shaders/modelsh.vs", "resources/shaders/modelsh.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+    Shader floorShader("resources/shaders/floor.vs", "resources/shaders/floor.fs");
 
     // load models
     // -----------
-    Model ourModel("resources/objects/backpack/backpack.obj");
+    Model ball("resources/objects/sball/ball_obj.obj");
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
     Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
-    Model ball("resources/objects/Beach_Ball/13517_Beach_Ball_v2_L3.obj");
 
     //DODAVANJE PREFIKSA !!!
-    ourModel.SetShaderTextureNamePrefix("material.");
+    //ourModel.SetShaderTextureNamePrefix("material.");
     sun.SetShaderTextureNamePrefix("material.");
     ship.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
@@ -195,6 +196,90 @@ int main() {
     lezaljka.SetShaderTextureNamePrefix("material.");
     table.SetShaderTextureNamePrefix("material.");
     tree.SetShaderTextureNamePrefix("material.");
+
+
+    float floorVertices[] = {
+            // positions                     // texture coords
+            0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+            0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+            -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
+    };
+    unsigned int floorIndices[] = {
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+    };
+    unsigned int floorVBO, floorVAO, floorEBO;
+    glGenVertexArrays(1, &floorVAO);
+    glGenBuffers(1, &floorVBO);
+    glGenBuffers(1, &floorEBO);
+
+    glBindVertexArray(floorVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floorIndices), floorIndices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    // load and create a texture
+    // -------------------------
+    unsigned int texture1, texture2;
+    // texture 1
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(FileSystem::getPath("resources/textures/marble1.jpeg").c_str(), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    // texture 2
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
+    data = stbi_load(FileSystem::getPath("resources/textures/marble2.jpeg").c_str(), &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    floorShader.use();
+    floorShader.setInt("texture1", 0);
+    floorShader.setInt("texture2", 1);
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
@@ -302,7 +387,9 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // don't forget to enable shader before setting uniforms
+
         ourShader.use();
+
         pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
 
 
@@ -323,23 +410,17 @@ int main() {
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
 
+
         // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               programState->backpackPosition); // translate it down so it's at the center of the scene
+        glm:: mat4 model = glm::mat4(1.0f);
+        //model = glm::translate(model,
+                         //      programState->backpackPosition); // translate it down so it's at the center of the scene
         //model = glm::rotate(model,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
 
-        model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
+        //model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
+        //ourShader.setMat4("model", model);
         //ourModel.Draw(ourShader);
 
-        //sun
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(-45.0f,10.0f,3.0f));
-        model = glm::scale(model, glm::vec3(programState->sunScale));
-        ourShader.setMat4("model", model);
-        //sun.Draw(ourShader); mozda suvisno?
 
         //ship
         model = glm::mat4(1.0f);
@@ -350,6 +431,15 @@ int main() {
         model = glm::scale(model, glm::vec3(0.5f));
         ourShader.setMat4("model", model);
         ship.Draw(ourShader);
+
+        //sun
+        model = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(-45.0f,10.0f,3.0f));
+        model = glm::scale(model, glm::vec3(programState->sunScale));
+        ourShader.setMat4("model", model);
+        //sun.Draw(ourShader); mozda suvisno?
+
 
         //suncobran
         model = glm::mat4(1.0f);
@@ -384,15 +474,14 @@ int main() {
                                glm::vec3(5.0f,-10.0f,-4.0f));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
-        lezaljka.Draw(ourShader);
+        //lezaljka.Draw(ourShader);
 
         //ball
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(-8.0f,-8.0f,-8.0f));
-        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
-        model = glm::scale(model, glm::vec3(0.04f));
-        ourShader.setMat4("model", model);
+        glm:: mat4 ballmodel = glm::mat4(1.0f);
+        ballmodel = glm::translate(ballmodel,programState->ballPosition);
+        ballmodel = glm::rotate(ballmodel,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        ballmodel = glm::scale(ballmodel, glm::vec3(5.0f));
+        ourShader.setMat4("model", ballmodel);
         ball.Draw(ourShader);
 
         //tree
@@ -423,6 +512,31 @@ int main() {
         tree.Draw(ourShader);
 
 
+        //floor
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
+        floorShader.use();
+
+        model  = glm::mat4(1.0f);
+        model = glm::translate(model,
+                               glm::vec3(10.0f,-6.2f,0.0f));
+        model = glm::rotate(model, glm::radians(-85.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(10.0f));
+
+        unsigned int modelLoc = glGetUniformLocation(floorShader.ID, "model");
+        unsigned int viewLoc  = glGetUniformLocation(floorShader.ID, "view");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        floorShader.setMat4("projection", projection);
+
+        glBindVertexArray(floorVAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
 
         //skybox
         glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
@@ -437,6 +551,7 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
+
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
@@ -474,7 +589,14 @@ void processInput(GLFWwindow *window) {
         programState->camera.ProcessMouseMovement(-10.0, 0.0);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         programState->camera.ProcessMouseMovement(10.0, 0.0);
-
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        programState->ballPosition += glm:: vec3(0.0f,0.0f,0.1f);
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        programState->ballPosition += glm:: vec3(0.0f,0.0f,-0.1f);
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        programState->ballPosition += glm:: vec3(0.1f,0.0f,0.f);
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        programState->ballPosition += glm:: vec3(-0.1f,0.0f,0.0f);
 
 }
 
