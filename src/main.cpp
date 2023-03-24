@@ -189,10 +189,10 @@ int main() {
     Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
-
+    Model gold("resources/objects/gold/Gold.obj");
     //DODAVANJE PREFIKSA !!!
     //ourModel.SetShaderTextureNamePrefix("material.");
-    sun.SetShaderTextureNamePrefix("material.");
+    gold.SetShaderTextureNamePrefix("material.");
     ship.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
     ball.SetShaderTextureNamePrefix("material.");
@@ -282,52 +282,6 @@ int main() {
 
 
     unsigned int cubemapTexture = loadCubemap(faces);
-
-    //blending
-//    float cubeVertices[] = {
-//            // positions          // texture Coords
-//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-//            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-//
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-//            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//
-//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-//
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-//            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-//    };
 
     float cubeVertices[] = {
             // back face
@@ -503,14 +457,16 @@ int main() {
 
 
         // render the loaded model
-        glm:: mat4 model = glm::mat4(1.0f);
-        //model = glm::translate(model,
-                         //      programState->backpackPosition); // translate it down so it's at the center of the scene
-        //model = glm::rotate(model,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
 
-        //model = glm::scale(model, glm::vec3(programState->backpackScale));    // it's a bit too big for our scene, so scale it down
-        //ourShader.setMat4("model", model);
-        //ourModel.Draw(ourShader);
+
+        //gold
+        glm:: mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-14.9f,-8.7f,9.7f));
+        model = glm::rotate(model,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
+
+        model = glm::scale(model, glm::vec3(0.015f));    // it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        gold.Draw(ourShader);
 
 
         //ship
