@@ -26,13 +26,15 @@ void processInput(GLFWwindow *window);
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-
 unsigned int loadCubemap(vector<std::string> faces);
 
+unsigned int loadTexture(const char *path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+//face cull
+int id = GL_BACK;
 // camera
 
 float lastX = SCR_WIDTH / 2.0f;
@@ -175,7 +177,8 @@ int main() {
     // -------------------------
     Shader ourShader("resources/shaders/modelsh.vs", "resources/shaders/modelsh.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
-    Shader floorShader("resources/shaders/floor.vs", "resources/shaders/floor.fs");
+    //Shader floorShader("resources/shaders/floor.vs", "resources/shaders/floor.fs");
+    Shader blendingShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
 
     // load models
     // -----------
@@ -196,90 +199,6 @@ int main() {
     lezaljka.SetShaderTextureNamePrefix("material.");
     table.SetShaderTextureNamePrefix("material.");
     tree.SetShaderTextureNamePrefix("material.");
-
-
-    float floorVertices[] = {
-            // positions                     // texture coords
-            0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-            0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
-    };
-    unsigned int floorIndices[] = {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
-    };
-    unsigned int floorVBO, floorVAO, floorEBO;
-    glGenVertexArrays(1, &floorVAO);
-    glGenBuffers(1, &floorVBO);
-    glGenBuffers(1, &floorEBO);
-
-    glBindVertexArray(floorVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, floorVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, floorEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(floorIndices), floorIndices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-
-    // load and create a texture
-    // -------------------------
-    unsigned int texture1, texture2;
-    // texture 1
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load(FileSystem::getPath("resources/textures/marble1.jpeg").c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-    // texture 2
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    data = stbi_load(FileSystem::getPath("resources/textures/marble2.jpeg").c_str(), &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    floorShader.use();
-    floorShader.setInt("texture1", 0);
-    floorShader.setInt("texture2", 1);
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
@@ -364,7 +283,179 @@ int main() {
 
     unsigned int cubemapTexture = loadCubemap(faces);
 
+    //blending
+//    float cubeVertices[] = {
+//            // positions          // texture Coords
+//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+//            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+//
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+//            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+//            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+//
+//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+//            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+//            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+//            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+//            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+//
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+//            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+//            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+//            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+//    };
 
+    float cubeVertices[] = {
+            // back face
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+            // front face
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
+            // left face
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+            // right face
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+            0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+            // bottom face
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+            // top face
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // top-left
+    };
+    glad_glFrontFace(GL_CW);
+
+
+    float planeVertices[] = {
+            // positions          // texture Coords
+            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+            -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+
+            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+            5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+    };
+    float transparentVertices[] = {
+            // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+            1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+    };
+//     cube VAO
+    unsigned int cubeVAO, cubeVBO;
+    glGenVertexArrays(1, &cubeVAO);
+    glGenBuffers(1, &cubeVBO);
+    glBindVertexArray(cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // plane VAO
+    unsigned int planeVAO, planeVBO;
+    glGenVertexArrays(1, &planeVAO);
+    glGenBuffers(1, &planeVBO);
+    glBindVertexArray(planeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // transparent VAO -> CLOUDS
+    unsigned int transparentVAO, transparentVBO;
+    glGenVertexArrays(1, &transparentVAO);
+    glGenBuffers(1, &transparentVBO);
+    glBindVertexArray(transparentVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
+    // load textures
+    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/chest.jpg").c_str());
+    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/wood.jpeg").c_str());
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/cloud.png").c_str());
+
+    // clouds location
+    // add some more?
+    vector<glm::vec3> clouds
+            {
+                    glm::vec3(-1.5f, 5.0f, -0.48f),
+                    glm::vec3( 1.5f, 5.0f, 0.51f),
+                    glm::vec3( 0.0f, 5.0f, 0.7f),
+                    glm::vec3(-0.3f, 5.0f, -2.3f),
+                    glm::vec3 (0.5f, 5.0f, -0.6f),
+                    glm::vec3(-2.5f, 5.0f, -0.48f),
+                    glm::vec3( 0.5f, 5.0f, 0.51f),
+                    glm::vec3( 2.5f, 5.0f, 0.7f),
+                    glm::vec3(0.3f, 5.0f, -2.3f),
+                    glm::vec3 (-2.5f, 5.0f, -0.6f)
+            };
+
+    // shader configuration
+    // --------------------
+    blendingShader.use();
+    blendingShader.setInt("texture1", 0);
 
 
     // render loop
@@ -386,7 +477,7 @@ int main() {
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // don't forget to enable shader before setting uniforms
+
 
         ourShader.use();
 
@@ -428,7 +519,7 @@ int main() {
                                glm::vec3(60,-8,50));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
 
-        model = glm::scale(model, glm::vec3(0.5f));
+        model = glm::scale(model, glm::vec3(0.4f));
         ourShader.setMat4("model", model);
         ship.Draw(ourShader);
 
@@ -474,7 +565,7 @@ int main() {
                                glm::vec3(5.0f,-10.0f,-4.0f));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
-        //lezaljka.Draw(ourShader);
+        lezaljka.Draw(ourShader);
 
         //ball
         glm:: mat4 ballmodel = glm::mat4(1.0f);
@@ -512,30 +603,59 @@ int main() {
         tree.Draw(ourShader);
 
 
-        //floor
 
+
+        //blending
+
+        blendingShader.use();
+
+        model = glm::mat4(1.0f);
+        blendingShader.setMat4("projection", projection);
+        blendingShader.setMat4("view", view);
+
+        glEnable(GL_CULL_FACE);
+        // kovceg
+
+        glCullFace(id);
+
+        glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-15.0f, -8.0f, 10.0f));
+        model = glm::scale(model, glm::vec3(2.0f));
+        blendingShader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        floorShader.use();
+        glDisable(GL_CULL_FACE);
 
-        model  = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(10.0f,-6.2f,0.0f));
-        model = glm::rotate(model, glm::radians(-85.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(10.0f));
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(-12.0f, -8.0f, 0.0f));
+        //model = glm::scale(model, glm::vec3(5.0f));
+        //blendingShader.setMat4("model", model);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        unsigned int modelLoc = glGetUniformLocation(floorShader.ID, "model");
-        unsigned int viewLoc  = glGetUniformLocation(floorShader.ID, "view");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        floorShader.setMat4("projection", projection);
+        // floor
+        glBindVertexArray(planeVAO);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f,-11.0f,-20.0f));
+        model = glm::scale(model, glm::vec3(3.5f));
+        blendingShader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        glBindVertexArray(floorVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+        // clouds
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D, transparentTexture);
+        for (unsigned int i = 0; i < clouds.size(); i++)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, clouds[i]);
+            model = glm::scale(model, glm::vec3(1.0f));
+            blendingShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
 
 
         //skybox
@@ -589,6 +709,9 @@ void processInput(GLFWwindow *window) {
         programState->camera.ProcessMouseMovement(-10.0, 0.0);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         programState->camera.ProcessMouseMovement(10.0, 0.0);
+
+
+
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         programState->ballPosition += glm:: vec3(0.0f,0.0f,0.1f);
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
@@ -597,6 +720,10 @@ void processInput(GLFWwindow *window) {
         programState->ballPosition += glm:: vec3(0.1f,0.0f,0.f);
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         programState->ballPosition += glm:: vec3(-0.1f,0.0f,0.0f);
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+        id =GL_FRONT;
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        id = GL_BACK;
 
 }
 
@@ -708,6 +835,44 @@ unsigned int loadCubemap(vector<std::string> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
+
+unsigned int loadTexture(char const * path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
 
     return textureID;
 }
