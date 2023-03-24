@@ -9,4 +9,6 @@ newmtl wire_112112169
 	Kd 1 1 1
 	Ks 0.3500 0.3500 0.3500
 	map_Kd diffuse.jpg
-	map_Ks specular.png
+	map_Bump normal.png
+	map_Pr roughness.jpg
+

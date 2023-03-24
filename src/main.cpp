@@ -186,7 +186,7 @@ int main() {
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
-    Model sun("resources/objects/Sun/uploads_files_4253924_Style+Sun_v1_001.obj");
+    Model sun("resources/objects/Sun/Sun.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
     Model gold("resources/objects/gold/Gold.obj");
