@@ -183,10 +183,12 @@ int main() {
     // load models
     // -----------
     Model ball("resources/objects/sball/ball_obj.obj");
+
+
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
-    Model sun("resources/objects/Sun/Sun.obj");
+    //Model sun("resources/objects/Sun/Sun.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
     Model gold("resources/objects/gold/Gold.obj");
@@ -207,8 +209,8 @@ int main() {
     pointLight.specular = glm::vec3(1.0, 0.1, 0.1);
 
     pointLight.constant = 1.0f;
-    pointLight.linear = 0.09f;
-    pointLight.quadratic = 0.032f;
+    pointLight.linear = 0.015f;
+    pointLight.quadratic = 0.0f;
 
 
 
@@ -394,16 +396,24 @@ int main() {
     // add some more?
     vector<glm::vec3> clouds
             {
-                    glm::vec3(-1.5f, 5.0f, -0.48f),
-                    glm::vec3( 1.5f, 5.0f, 0.51f),
-                    glm::vec3( 0.0f, 5.0f, 0.7f),
-                    glm::vec3(-0.3f, 5.0f, -2.3f),
-                    glm::vec3 (0.5f, 5.0f, -0.6f),
-                    glm::vec3(-2.5f, 5.0f, -0.48f),
-                    glm::vec3( 0.5f, 5.0f, 0.51f),
-                    glm::vec3( 2.5f, 5.0f, 0.7f),
-                    glm::vec3(0.3f, 5.0f, -2.3f),
-                    glm::vec3 (-2.5f, 5.0f, -0.6f)
+                    glm::vec3(-1.5f, 6.0f, -0.48f),
+                    glm::vec3( 1.5f, 7.0f, 0.51f),
+                    glm::vec3( 0.0f, 6.0f, 0.7f),
+                    glm::vec3(-0.3f, 7.0f, -2.3f),
+                    glm::vec3 (0.5f, 6.0f, -0.6f),
+                    glm::vec3(-2.5f, 7.0f, -0.48f),
+                    glm::vec3( 0.5f, 6.0f, 0.51f),
+                    glm::vec3( 2.5f, 7.0f, 0.7f),
+                    glm::vec3(0.3f, 6.0f, -2.3f),
+                    glm::vec3 (-2.5f, 7.0f, -0.6f),
+                    glm::vec3(-3.5f, 6.0f, -0.48f),
+                    glm::vec3( 3.5f, 7.0f, 0.51f),
+                    glm::vec3( 3.0f, 6.0f, 0.7f),
+                    glm::vec3(-3.3f, 7.0f, -2.3f),
+                    glm::vec3(-4.5f, 7.0f, -0.48f),
+                    glm::vec3( 4.5f, 7.0f, 0.7f),
+                    glm::vec3(.3f, 6.0f, -2.3f),
+                    glm::vec3 (-4.5f, 7.0f, -0.6f)
             };
 
     // shader configuration
@@ -446,8 +456,8 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 128.0f);
-        ourShader.setFloat("material.shininess", 128.0f);
+        ourShader.setFloat("material.shininess", 16.0f);
+        //ourShader.setFloat("material.shininess", 16.0f);
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);

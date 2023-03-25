@@ -10,17 +10,19 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd Fabric_color.jpg
 
 newmtl Sun_lounger_Leather
 Ns 25.309908
 Ka 1.000000 1.000000 1.000000
-Kd 0.015340 0.015340 0.015340
+Kd 1 1 1
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Ns  Brown_leather_02_2K_Roughness.jpg
+map_Kd Brown_leather_02_2K_Base_Color.jpg
+
 
 newmtl Sun_lounger_Leather_suede
 Ns 39.999996
@@ -31,7 +33,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd  -o 0.05 0.05 0.05 Suede_1K.jpg
+map_Kd Suede_1K.jpg
 
 newmtl Sun_lounger_steel
 Ns 360.000000
@@ -42,6 +44,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 3
+map_Kd Fabric_color.jpg
 
 newmtl Sun_lounger_wood
 Ns 250.000000
@@ -53,4 +56,3 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd  -o 2 2 2 WoodFine013_COL_2K.jpg
-map_Bump  -o 2 2 2 -bm 5.000000 WoodFine013_NRM16_2K.jpg
