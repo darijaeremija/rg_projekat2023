@@ -15,3 +15,16 @@ Change face culling(hide and show gold)
 Skybox
 
 [Demo video](https://www.youtube.com/watch?v=RWrWAXtkQ-0)
+
+
+
+### Screenshots
+
+![](screenshots/view2.png)
+![](screenshots/view3.png)
+![](screenshots/view4.png)
+![](screenshots/view5.png)
+![](screenshots/closedChest.png)
+![](screenshots/openedChest.png)
+![](screenshots/ballPosition1.png)
+![](screenshots/ballPosition2.png)
