@@ -61,16 +61,13 @@ struct ProgramState {
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
-    glm::vec3 backpackPosition = glm::vec3(0.0f);
-    float backpackScale = 1.0f;
+    //glm::vec3 backpackPosition = glm::vec3(0.0f);
+    //float backpackScale = 1.0f;
 
-    glm::vec3 sunPosition = glm::vec3(-45.0f,10.0f,3.0f);
-    float sunScale = 0.2f;
 
     glm::vec3 ballPosition =glm::vec3(-14.0f,-8.0f,0.0f);
 
-    glm::vec3 shipPosition = glm::vec3(-45.0f,-10.0f,3.0f);
-    float shipScale = 0.8f;
+
 
     PointLight pointLight;
     ProgramState()
@@ -177,18 +174,14 @@ int main() {
     // -------------------------
     Shader ourShader("resources/shaders/modelsh.vs", "resources/shaders/modelsh.fs");
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
-    //Shader floorShader("resources/shaders/floor.vs", "resources/shaders/floor.fs");
     Shader blendingShader("resources/shaders/blending.vs", "resources/shaders/blending.fs");
 
     // load models
     // -----------
     Model ball("resources/objects/sball/ball_obj.obj");
-
-
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
-    //Model sun("resources/objects/Sun/Sun.obj");
     Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
     Model gold("resources/objects/gold/Gold.obj");
@@ -203,19 +196,16 @@ int main() {
     tree.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
-    pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
+    //pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
+    pointLight.position = programState->ballPosition;
     pointLight.ambient = glm::vec3(0.7, 0.7, 0.7);
     pointLight.diffuse = glm::vec3(0.4, 0.4, 1);
-    pointLight.specular = glm::vec3(1.0, 0.1, 0.1);
+    pointLight.specular = glm::vec3(1.0, 0.4, 1.0);
 
     pointLight.constant = 1.0f;
     pointLight.linear = 0.015f;
     pointLight.quadratic = 0.0f;
 
-
-
-    // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     float skyboxVertices[] = {
             // positions
@@ -333,7 +323,6 @@ int main() {
 
 
     float planeVertices[] = {
-            // positions          // texture Coords
             5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
             -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
             -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
@@ -343,7 +332,6 @@ int main() {
             5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
     float transparentVertices[] = {
-            // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
             0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
             0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
             1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
@@ -393,7 +381,6 @@ int main() {
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/cloud.png").c_str());
 
     // clouds location
-    // add some more?
     vector<glm::vec3> clouds
             {
                     glm::vec3(-1.5f, 6.0f, -0.48f),
@@ -456,8 +443,8 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 16.0f);
-        //ourShader.setFloat("material.shininess", 16.0f);
+        ourShader.setFloat("material.shininess", 64.0f);
+
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
                                                 (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
@@ -470,17 +457,18 @@ int main() {
 
 
         //gold
-        glm:: mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-14.9f,-8.7f,9.7f));
-        model = glm::rotate(model,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
+        glm:: mat4 goldmat = glm::mat4(1.0f);
+        goldmat = glm::translate(goldmat, glm::vec3(-14.9f,-8.7f,9.7f));
+        goldmat = glm::rotate(goldmat,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
 
-        model = glm::scale(model, glm::vec3(0.015f));    // it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
+        goldmat = glm::scale(goldmat, glm::vec3(0.015f));    // it's a bit too big for our scene, so scale it down
+
+        ourShader.setMat4("model", goldmat);
         gold.Draw(ourShader);
 
 
         //ship
-        model = glm::mat4(1.0f);
+        glm :: mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(60,-8,50));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
@@ -488,14 +476,6 @@ int main() {
         model = glm::scale(model, glm::vec3(0.4f));
         ourShader.setMat4("model", model);
         ship.Draw(ourShader);
-
-        //sun
-        model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(-45.0f,10.0f,3.0f));
-        model = glm::scale(model, glm::vec3(programState->sunScale));
-        ourShader.setMat4("model", model);
-        //sun.Draw(ourShader); mozda suvisno?
 
 
         //suncobran
@@ -536,7 +516,7 @@ int main() {
         //ball
         glm:: mat4 ballmodel = glm::mat4(1.0f);
         ballmodel = glm::translate(ballmodel,programState->ballPosition);
-        ballmodel = glm::rotate(ballmodel,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+        ballmodel = glm::rotate(ballmodel,(float)currentFrame , glm::vec3(0, 1, 0));
         ballmodel = glm::scale(ballmodel, glm::vec3(5.0f));
         ourShader.setMat4("model", ballmodel);
         ball.Draw(ourShader);
@@ -545,7 +525,7 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(-19.0f,-6.0f,0.0f));
-        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
+
         model = glm::scale(model, glm::vec3(2.0f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
@@ -554,7 +534,6 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(-19.0f,-6.0f,3.5f));
-        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
         model = glm::scale(model, glm::vec3(2.0f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
@@ -563,7 +542,6 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(-19.0f,-6.0f,7.0f));
-        //model = glm::rotate(model,(float)glfwGetTime() , glm::vec3(0, 1, 0));
         model = glm::scale(model, glm::vec3(2.0f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
@@ -595,12 +573,6 @@ int main() {
 
         glDisable(GL_CULL_FACE);
 
-        //model = glm::mat4(1.0f);
-        //model = glm::translate(model, glm::vec3(-12.0f, -8.0f, 0.0f));
-        //model = glm::scale(model, glm::vec3(5.0f));
-        //blendingShader.setMat4("model", model);
-        //glDrawArrays(GL_TRIANGLES, 0, 36);
-
         // floor
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -625,11 +597,12 @@ int main() {
 
 
         //skybox
-        glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);
         skyboxShader.use();
-        view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix()));// remove translation from the view matrix
+        view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix()));
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
+
         //skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -676,8 +649,6 @@ void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         programState->camera.ProcessMouseMovement(10.0, 0.0);
 
-
-
     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         programState->ballPosition += glm:: vec3(0.0f,0.0f,0.1f);
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
@@ -686,6 +657,8 @@ void processInput(GLFWwindow *window) {
         programState->ballPosition += glm:: vec3(0.1f,0.0f,0.f);
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         programState->ballPosition += glm:: vec3(-0.1f,0.0f,0.0f);
+
+
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         id =GL_FRONT;
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
@@ -734,12 +707,11 @@ void DrawImGui(ProgramState *programState) {
 
     {
         static float f = 0.0f;
-        ImGui::Begin("Hello window");
-        ImGui::Text("Hello text");
+        ImGui::Begin("Perea beach");
+        ImGui::Text("Perea beach");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
-        ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition); //0.1 4.0
-        ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3("Ball position", (float*)&programState->ballPosition); //0.1 4.0
+        //ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
