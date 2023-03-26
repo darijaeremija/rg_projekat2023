@@ -182,18 +182,20 @@ int main() {
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
-    Model ship("resources/objects/ship/ship.obj");
+    //Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
     Model gold("resources/objects/gold/Gold.obj");
+    Model sand("resources/objects/sand/sand.obj");
     //DODAVANJE PREFIKSA !!!
     //ourModel.SetShaderTextureNamePrefix("material.");
     gold.SetShaderTextureNamePrefix("material.");
-    ship.SetShaderTextureNamePrefix("material.");
+    //ship.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
     ball.SetShaderTextureNamePrefix("material.");
     lezaljka.SetShaderTextureNamePrefix("material.");
     table.SetShaderTextureNamePrefix("material.");
     tree.SetShaderTextureNamePrefix("material.");
+    sand.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     //pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
@@ -264,12 +266,12 @@ int main() {
     stbi_set_flip_vertically_on_load(false);
     vector<std::string> faces
           {
-                FileSystem::getPath("/resources/textures/PereaBeach2/posx.jpg"),
-                FileSystem::getPath("/resources/textures/PereaBeach2/negx.jpg"),
-                FileSystem::getPath("/resources/textures/PereaBeach2/posy.jpg"),
-                FileSystem::getPath("/resources/textures/PereaBeach2/negy.jpg"),
-                FileSystem::getPath("/resources/textures/PereaBeach2/posz.jpg"),
-                FileSystem::getPath("/resources/textures/PereaBeach2/negz.jpg")
+                FileSystem::getPath("/resources/textures/skybox/Right.bmp"),
+                FileSystem::getPath("/resources/textures/skybox/Left.bmp"),
+                FileSystem::getPath("/resources/textures/skybox/Top.bmp"),
+                FileSystem::getPath("/resources/textures/skybox/Bottom.bmp"),
+                FileSystem::getPath("/resources/textures/skybox/Front.bmp"),
+                FileSystem::getPath("/resources/textures/skybox/Back.bmp")
     };
 
 
@@ -384,24 +386,14 @@ int main() {
     vector<glm::vec3> clouds
             {
                     glm::vec3(-1.5f, 6.0f, -0.48f),
-                    glm::vec3( 1.5f, 7.0f, 0.51f),
-                    glm::vec3( 0.0f, 6.0f, 0.7f),
-                    glm::vec3(-0.3f, 7.0f, -2.3f),
-                    glm::vec3 (0.5f, 6.0f, -0.6f),
-                    glm::vec3(-2.5f, 7.0f, -0.48f),
-                    glm::vec3( 0.5f, 6.0f, 0.51f),
-                    glm::vec3( 2.5f, 7.0f, 0.7f),
-                    glm::vec3(0.3f, 6.0f, -2.3f),
-                    glm::vec3 (-2.5f, 7.0f, -0.6f),
-                    glm::vec3(-3.5f, 6.0f, -0.48f),
-                    glm::vec3( 3.5f, 7.0f, 0.51f),
-                    glm::vec3( 3.0f, 6.0f, 0.7f),
-                    glm::vec3(-3.3f, 7.0f, -2.3f),
-                    glm::vec3(-4.5f, 7.0f, -0.48f),
-                    glm::vec3( 4.5f, 7.0f, 0.7f),
-                    glm::vec3(.3f, 6.0f, -2.3f),
-                    glm::vec3 (-4.5f, 7.0f, -0.6f)
-            };
+                    glm::vec3( 5.5f, 7.0f, 0.51f),
+                    glm::vec3( 8.0f, 6.0f, 0.7f),
+                    glm::vec3(-9.3f, 7.0f, -2.3f),
+                    glm::vec3 (11.5f, 6.0f, -0.6f),
+                    glm::vec3(-15.5f, 7.0f, -0.48f),
+                    glm::vec3( 9.5f, 6.0f, 0.51f),
+                    glm::vec3( -11.5f, 7.0f, 0.7f),
+                    };
 
     // shader configuration
     // --------------------
@@ -455,6 +447,18 @@ int main() {
 
         // render the loaded model
 
+        //sand
+        glm:: mat4 s = glm::mat4(1.0f);
+        s = glm::translate(s, glm::vec3(-14.9f,-8.7f,9.7f));
+        s = glm::rotate(s,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
+
+        s = glm::scale(s, glm::vec3(6.0f,2.0f,6.0f));    // it's a bit too big for our scene, so scale it down
+
+        ourShader.setMat4("model", s);
+        sand.Draw(ourShader);
+
+
+
 
         //gold
         glm:: mat4 goldmat = glm::mat4(1.0f);
@@ -468,18 +472,18 @@ int main() {
 
 
         //ship
-        glm :: mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(60,-8,50));
-        model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
+        //glm :: mat4 model = glm::mat4(1.0f);
+        //model = glm::translate(model,
+        //                     glm::vec3(60,-8,50));
+        //model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
 
-        model = glm::scale(model, glm::vec3(0.4f));
-        ourShader.setMat4("model", model);
-        ship.Draw(ourShader);
+        //model = glm::scale(model, glm::vec3(0.4f));
+        //ourShader.setMat4("model", model);
+        //ship.Draw(ourShader);
 
 
         //suncobran
-        model = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
                                glm::vec3(0.3f,-7.0f,3.0f));
         model = glm::scale(model, glm::vec3(2.0f,2.0f,2.0f));
@@ -590,7 +594,7 @@ int main() {
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, clouds[i]);
-            model = glm::scale(model, glm::vec3(1.0f));
+            model = glm::scale(model, glm::vec3(4.0f));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }

@@ -1,0 +1,15 @@
+# Blender MTL File: 'wirefamerender.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 54.223142
+Ka 1.000000 1.000000 1.000000
+Kd 0.92559 0.54921 0.29942
+Ks 0.88182 0.838182 0.38182
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump normal.jpg
+map_Kd diffuse.jpg
+map_Ks specular.jpg
