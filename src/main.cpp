@@ -65,7 +65,7 @@ struct ProgramState {
     //float backpackScale = 1.0f;
 
 
-    glm::vec3 ballPosition =glm::vec3(-14.0f,-8.0f,0.0f);
+    glm::vec3 ballPosition =glm::vec3(-14.0f,-8.15f,0.0f);
 
 
 
@@ -324,15 +324,15 @@ int main() {
     glad_glFrontFace(GL_CW);
 
 
-    float planeVertices[] = {
-            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-            -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-
-            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-            5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-    };
+//    float planeVertices[] = {
+//            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+//            -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+//            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+//
+//            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+//            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+//            5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+//    };
     float transparentVertices[] = {
             0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
             0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
@@ -353,18 +353,18 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // plane VAO
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-    glBindVertexArray(planeVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // transparent VAO -> CLOUDS
+//    // plane VAO
+//    unsigned int planeVAO, planeVBO;
+//    glGenVertexArrays(1, &planeVAO);
+//    glGenBuffers(1, &planeVBO);
+//    glBindVertexArray(planeVAO);
+//    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+//    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+//    glEnableVertexAttribArray(1);
+//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // transparent VAO -> icecream
     unsigned int transparentVAO, transparentVBO;
     glGenVertexArrays(1, &transparentVAO);
     glGenBuffers(1, &transparentVBO);
@@ -379,21 +379,21 @@ int main() {
 
     // load textures
     unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/chest.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/wood.jpeg").c_str());
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/cloud.png").c_str());
+    //unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/wood.jpeg").c_str());
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/icecream.png").c_str());
 
-    // clouds location
-    vector<glm::vec3> clouds
-            {
-                    glm::vec3(-1.5f, 6.0f, -0.48f),
-                    glm::vec3( 5.5f, 7.0f, 0.51f),
-                    glm::vec3( 8.0f, 6.0f, 0.7f),
-                    glm::vec3(-9.3f, 7.0f, -2.3f),
-                    glm::vec3 (11.5f, 6.0f, -0.6f),
-                    glm::vec3(-15.5f, 7.0f, -0.48f),
-                    glm::vec3( 9.5f, 6.0f, 0.51f),
-                    glm::vec3( -11.5f, 7.0f, 0.7f),
-                    };
+//    // clouds location
+//    vector<glm::vec3> clouds
+//            {
+//                    glm::vec3(-1.5f, 6.0f, -0.48f),
+//                    glm::vec3( 5.5f, 7.0f, 0.51f),
+//                    glm::vec3( 8.0f, 6.0f, 0.7f),
+//                    glm::vec3(-9.3f, 7.0f, -2.3f),
+//                    glm::vec3 (11.5f, 6.0f, -0.6f),
+//                    glm::vec3(-15.5f, 7.0f, -0.48f),
+//                    glm::vec3( 9.5f, 6.0f, 0.51f),
+//                    glm::vec3( -11.5f, 7.0f, 0.7f),
+//                    };
 
     // shader configuration
     // --------------------
@@ -462,7 +462,8 @@ int main() {
 
         //gold
         glm:: mat4 goldmat = glm::mat4(1.0f);
-        goldmat = glm::translate(goldmat, glm::vec3(-14.9f,-8.7f,9.7f));
+        goldmat = glm::translate(goldmat, glm::vec3(-14.9f,-8.5f,9.7f));
+
         goldmat = glm::rotate(goldmat,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
 
         goldmat = glm::scale(goldmat, glm::vec3(0.015f));    // it's a bit too big for our scene, so scale it down
@@ -485,15 +486,15 @@ int main() {
         //suncobran
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(0.3f,-7.0f,3.0f));
-        model = glm::scale(model, glm::vec3(2.0f,2.0f,2.0f));
+                               glm::vec3(0.3f,-8.0f,3.0f));
+        model = glm::scale(model, glm::vec3(2.0f,2.5f,2.0f));
         ourShader.setMat4("model", model);
         suncobran.Draw(ourShader);
 
         //table
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(-1.25f,-9.0f,0.0f));
+                               glm::vec3(-1.25f,-9.2f,0.0f));
 
         model = glm::scale(model, glm::vec3(0.04f,0.04f,0.04f));
         ourShader.setMat4("model", model);
@@ -503,7 +504,7 @@ int main() {
         model = glm::mat4(1.0f);
 
         model = glm::translate(model,
-                               glm::vec3(-5.0f,-10.0f,-4.0f));
+                               glm::vec3(-5.0f,-9.2f,-4.0f));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
@@ -512,7 +513,7 @@ int main() {
         //lezaljka2
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(5.0f,-10.0f,-4.0f));
+                               glm::vec3(5.0f,-9.2f,-4.0f));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
         lezaljka.Draw(ourShader);
@@ -530,23 +531,23 @@ int main() {
         model = glm::translate(model,
                                glm::vec3(-19.0f,-6.0f,0.0f));
 
-        model = glm::scale(model, glm::vec3(2.0f));
+        model = glm::scale(model, glm::vec3(2.5f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
 
         //tree2
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(-19.0f,-6.0f,3.5f));
-        model = glm::scale(model, glm::vec3(2.0f));
+                               glm::vec3(-19.0f,-6.0f,7.5f));
+        model = glm::scale(model, glm::vec3(2.5f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
 
         //tree 3
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(-19.0f,-6.0f,7.0f));
-        model = glm::scale(model, glm::vec3(2.0f));
+                               glm::vec3(-19.0f,-6.0f,15.0f));
+        model = glm::scale(model, glm::vec3(2.5f));
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
 
@@ -570,7 +571,8 @@ int main() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-15.0f, -8.0f, 10.0f));
+        model = glm::translate(model, glm::vec3(-15.0f, -7.42f, 10.0f));
+
         model = glm::scale(model, glm::vec3(2.0f));
         blendingShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -578,26 +580,25 @@ int main() {
         glDisable(GL_CULL_FACE);
 
         // floor
-        glBindVertexArray(planeVAO);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f,-11.0f,-20.0f));
-        model = glm::scale(model, glm::vec3(3.5f));
-        blendingShader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        //glBindVertexArray(planeVAO);
+        //glBindTexture(GL_TEXTURE_2D, floorTexture);
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(0.0f,-11.0f,-20.0f));
+        //model = glm::scale(model, glm::vec3(3.5f));
+        //blendingShader.setMat4("model", model);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-        // clouds
+        // icecream
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
-        for (unsigned int i = 0; i < clouds.size(); i++)
-        {
+
             model = glm::mat4(1.0f);
-            model = glm::translate(model, clouds[i]);
-            model = glm::scale(model, glm::vec3(4.0f));
+            model = glm::translate(model, glm::vec3(-1.8f,-6.0f,0.7f));
+            model = glm::scale(model, glm::vec3(1.0f));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
+
 
 
         //skybox
@@ -711,8 +712,8 @@ void DrawImGui(ProgramState *programState) {
 
     {
         static float f = 0.0f;
-        ImGui::Begin("Perea beach");
-        ImGui::Text("Perea beach");
+        ImGui::Begin("Island");
+        ImGui::Text("Island");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::DragFloat3("Ball position", (float*)&programState->ballPosition); //0.1 4.0
         //ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
