@@ -1,5 +1,5 @@
-# Perea Beach
-A peaceful beach with a comfortable deckchairs, small boat and a chest with hidden gold, tropical vegetation and a ball to play on the sand. 
+# Island
+A peaceful island with a comfortable deckchairs,small table with icecream and a chest with hidden gold, tropical vegetation and a ball to play on the sand. 
 ## Author
 Darija Eremija 122/2018
 # Keyboard instructions
@@ -14,17 +14,5 @@ Change face culling(hide and show gold)
 ## Group A 
 Skybox
 
-[Demo video](https://www.youtube.com/watch?v=RWrWAXtkQ-0)
+[Demo video](https://youtu.be/dRPEFoOwT04)
 
-
-
-### Screenshots
-
-![](screenshots/view2.png)
-![](screenshots/view3.png)
-![](screenshots/view4.png)
-![](screenshots/view5.png)
-![](screenshots/closedChest.png)
-![](screenshots/openedChest.png)
-![](screenshots/ballPosition1.png)
-![](screenshots/ballPosition2.png)
