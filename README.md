@@ -14,5 +14,12 @@ Change face culling(hide and show gold)
 ## Group A 
 Skybox
 
+
+### Screenshots
+
+![](screenshots/view1.png)
+![](screenshots/view3.png)
+![](screenshots/chest1.png)
+
 [Demo video](https://youtu.be/dRPEFoOwT04)
 
