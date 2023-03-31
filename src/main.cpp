@@ -182,14 +182,11 @@ int main() {
     Model tree("resources/objects/Tree/Tree.obj");
     Model lezaljka("resources/objects/lezaljka/lezaljka.obj");
     Model table("resources/objects/Table/Table.obj");
-    //Model ship("resources/objects/ship/ship.obj");
     Model suncobran("resources/objects/suncobran/suncobran.obj");
     Model gold("resources/objects/gold/Gold.obj");
     Model sand("resources/objects/sand/sand.obj");
-    //DODAVANJE PREFIKSA !!!
-    //ourModel.SetShaderTextureNamePrefix("material.");
+
     gold.SetShaderTextureNamePrefix("material.");
-    //ship.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
     ball.SetShaderTextureNamePrefix("material.");
     lezaljka.SetShaderTextureNamePrefix("material.");
@@ -198,8 +195,7 @@ int main() {
     sand.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
-    //pointLight.position = glm::vec3(50.0f, 4.0, 5.0);
-    pointLight.position = programState->ballPosition;
+    pointLight.position = glm::vec3(0.0, 0.0, 0.0);
     pointLight.ambient = glm::vec3(0.7, 0.7, 0.7);
     pointLight.diffuse = glm::vec3(0.4, 0.4, 1);
     pointLight.specular = glm::vec3(1.0, 0.4, 1.0);
@@ -324,15 +320,6 @@ int main() {
     glad_glFrontFace(GL_CW);
 
 
-//    float planeVertices[] = {
-//            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-//            -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-//            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-//
-//            5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-//            -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-//            5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-//    };
     float transparentVertices[] = {
             0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
             0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
@@ -353,18 +340,8 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-//    // plane VAO
-//    unsigned int planeVAO, planeVBO;
-//    glGenVertexArrays(1, &planeVAO);
-//    glGenBuffers(1, &planeVBO);
-//    glBindVertexArray(planeVAO);
-//    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // transparent VAO -> icecream
+
+
     unsigned int transparentVAO, transparentVBO;
     glGenVertexArrays(1, &transparentVAO);
     glGenBuffers(1, &transparentVBO);
@@ -379,24 +356,9 @@ int main() {
 
     // load textures
     unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/chest.jpg").c_str());
-    //unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/wood.jpeg").c_str());
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/icecream.png").c_str());
 
-//    // clouds location
-//    vector<glm::vec3> clouds
-//            {
-//                    glm::vec3(-1.5f, 6.0f, -0.48f),
-//                    glm::vec3( 5.5f, 7.0f, 0.51f),
-//                    glm::vec3( 8.0f, 6.0f, 0.7f),
-//                    glm::vec3(-9.3f, 7.0f, -2.3f),
-//                    glm::vec3 (11.5f, 6.0f, -0.6f),
-//                    glm::vec3(-15.5f, 7.0f, -0.48f),
-//                    glm::vec3( 9.5f, 6.0f, 0.51f),
-//                    glm::vec3( -11.5f, 7.0f, 0.7f),
-//                    };
-
     // shader configuration
-    // --------------------
     blendingShader.use();
     blendingShader.setInt("texture1", 0);
 
@@ -424,7 +386,7 @@ int main() {
 
         ourShader.use();
 
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+        //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
 
 
         ourShader.setVec3("pointLight.ambient", pointLight.ambient);
@@ -452,35 +414,18 @@ int main() {
         s = glm::translate(s, glm::vec3(-14.9f,-8.7f,9.7f));
         s = glm::rotate(s,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
 
-        s = glm::scale(s, glm::vec3(6.0f,2.0f,6.0f));    // it's a bit too big for our scene, so scale it down
-
+        s = glm::scale(s, glm::vec3(6.0f,2.0f,6.0f));
         ourShader.setMat4("model", s);
         sand.Draw(ourShader);
-
-
 
 
         //gold
         glm:: mat4 goldmat = glm::mat4(1.0f);
         goldmat = glm::translate(goldmat, glm::vec3(-14.9f,-8.5f,9.7f));
-
         goldmat = glm::rotate(goldmat,glm::radians(-90.0f) , glm::vec3(0, 1, 0));
-
-        goldmat = glm::scale(goldmat, glm::vec3(0.015f));    // it's a bit too big for our scene, so scale it down
-
+        goldmat = glm::scale(goldmat, glm::vec3(0.015f));
         ourShader.setMat4("model", goldmat);
         gold.Draw(ourShader);
-
-
-        //ship
-        //glm :: mat4 model = glm::mat4(1.0f);
-        //model = glm::translate(model,
-        //                     glm::vec3(60,-8,50));
-        //model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
-
-        //model = glm::scale(model, glm::vec3(0.4f));
-        //ourShader.setMat4("model", model);
-        //ship.Draw(ourShader);
 
 
         //suncobran
@@ -551,9 +496,6 @@ int main() {
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
 
-
-
-
         //blending
 
         blendingShader.use();
@@ -564,7 +506,6 @@ int main() {
 
         glEnable(GL_CULL_FACE);
         // kovceg
-
         glCullFace(id);
 
         glBindVertexArray(cubeVAO);
@@ -579,15 +520,6 @@ int main() {
 
         glDisable(GL_CULL_FACE);
 
-        // floor
-        //glBindVertexArray(planeVAO);
-        //glBindTexture(GL_TEXTURE_2D, floorTexture);
-        //model = glm::mat4(1.0f);
-        //model = glm::translate(model, glm::vec3(0.0f,-11.0f,-20.0f));
-        //model = glm::scale(model, glm::vec3(3.5f));
-        //blendingShader.setMat4("model", model);
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-
 
         // icecream
         glBindVertexArray(transparentVAO);
@@ -598,8 +530,6 @@ int main() {
             model = glm::scale(model, glm::vec3(1.0f));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
-
-
 
         //skybox
         glDepthFunc(GL_LEQUAL);
@@ -619,8 +549,6 @@ int main() {
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
-
-
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
