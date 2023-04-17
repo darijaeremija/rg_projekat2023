@@ -8,6 +8,7 @@ newmtl wire_112112169
 	illum 2
 	Kd 0.5 0.5 0.5
 	Ks 1.00000 1.00000 1.00000
+	map_Bump normal.jpg
 	map_Kd diffuse.jpg
 	map_Ks specular.png
 

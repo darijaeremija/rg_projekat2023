@@ -16,21 +16,27 @@ struct PointLight {
 struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_specular1;
+    sampler2D texture_normal1;
 
     float shininess;
 };
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
+in mat3 TBN;
+in vec3 TangentLightPos;
+in vec3 TangentFragPos;
+in vec3 TangentViewPos;
 
 uniform PointLight pointLight;
 uniform Material material;
 
+uniform vec3 lightPos;
 uniform vec3 viewPosition;
 // calculates the color when using a point light.
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
+    vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
 
@@ -40,7 +46,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
     // attenuation
-    float distance = length(light.position - fragPos); //adjust if need again
+    float distance = length(TangentLightPos - TangentFragPos); //adjust if need again
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
 
@@ -57,8 +63,9 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 void main()
 {
-    vec3 normal = normalize(Normal);
-    vec3 viewDir = normalize(viewPosition - FragPos);
-    vec3 result = CalcPointLight(pointLight, normal, FragPos, viewDir);
+    vec3 normal = texture(material.texture_normal1, TexCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+    vec3 viewDir = normalize(TangentViewPos - TangentFragPos);
+    vec3 result = CalcPointLight(pointLight, normal, TangentFragPos, viewDir);
     FragColor = vec4(result, 1.0);
 }

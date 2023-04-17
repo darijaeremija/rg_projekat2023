@@ -186,6 +186,7 @@ int main() {
     Model gold("resources/objects/gold/Gold.obj");
     Model sand("resources/objects/sand/sand.obj");
 
+
     gold.SetShaderTextureNamePrefix("material.");
     suncobran.SetShaderTextureNamePrefix("material.");
     ball.SetShaderTextureNamePrefix("material.");
@@ -194,11 +195,13 @@ int main() {
     tree.SetShaderTextureNamePrefix("material.");
     sand.SetShaderTextureNamePrefix("material.");
 
+
+
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(0.0, 0.0, 0.0);
     pointLight.ambient = glm::vec3(0.7, 0.7, 0.7);
-    pointLight.diffuse = glm::vec3(0.4, 0.4, 1);
-    pointLight.specular = glm::vec3(1.0, 0.4, 1.0);
+    pointLight.diffuse = glm::vec3(0.3, 0.3, 0.0);
+    pointLight.specular = glm::vec3(0.7, 0.7, 0.01);
 
     pointLight.constant = 1.0f;
     pointLight.linear = 0.015f;
@@ -358,6 +361,7 @@ int main() {
     unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/chest.jpg").c_str());
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/icecream.png").c_str());
 
+
     // shader configuration
     blendingShader.use();
     blendingShader.setInt("texture1", 0);
@@ -397,6 +401,7 @@ int main() {
         ourShader.setFloat("pointLight.linear", pointLight.linear);
         ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
         ourShader.setVec3("viewPosition", programState->camera.Position);
+        ourShader.setVec3("lightPos", pointLight.position);
         ourShader.setFloat("material.shininess", 64.0f);
 
         // view/projection transformations
@@ -449,7 +454,7 @@ int main() {
         model = glm::mat4(1.0f);
 
         model = glm::translate(model,
-                               glm::vec3(-5.0f,-9.2f,-4.0f));
+                               glm::vec3(-5.0f,-9.3f,-4.0f));
         model = glm::rotate(model,glm::radians(180.0f) , glm::vec3(0, 1, 0));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
@@ -458,7 +463,7 @@ int main() {
         //lezaljka2
         model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(5.0f,-9.2f,-4.0f));
+                               glm::vec3(5.0f,-9.3f,-4.0f));
         model = glm::scale(model, glm::vec3(6.0f));
         ourShader.setMat4("model", model);
         lezaljka.Draw(ourShader);
@@ -496,6 +501,8 @@ int main() {
         ourShader.setMat4("model", model);
         tree.Draw(ourShader);
 
+
+
         //blending
 
         blendingShader.use();
@@ -530,6 +537,8 @@ int main() {
             model = glm::scale(model, glm::vec3(1.0f));
             blendingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
 
         //skybox
         glDepthFunc(GL_LEQUAL);

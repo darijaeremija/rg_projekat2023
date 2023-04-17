@@ -11,6 +11,7 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd Fabric_color.jpg
+map_Bump normal.jpg
 
 newmtl Sun_lounger_Leather
 Ns 25.309908
@@ -45,7 +46,7 @@ Ni 1.450000
 d 1.000000
 illum 3
 map_Kd Fabric_color.jpg
-
+map_Bump normal.jpg
 newmtl Sun_lounger_wood
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -55,4 +56,5 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd  -o 2 2 2 WoodFine013_COL_2K.jpg
+map_Kd  -o 2 2 2 diffuse.jpg
+map_Bump normal1.jpg

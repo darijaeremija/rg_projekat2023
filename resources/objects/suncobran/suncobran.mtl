@@ -10,7 +10,9 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd metal.jpg
+map_Kd Metal_006_basecolor.jpg
+map_Bump Metal_006_normal.jpg
+
 newmtl Material.003
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
@@ -19,7 +21,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd diffuse_01.png
+map_Kd Metal_006_basecolor.jpg
+map_Bump Metal_006_normal.jpg
 
 newmtl Material.004
 Ns 826.446228
@@ -30,8 +33,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 3
-map_Kd metal.jpg
-
+map_Kd Metal_006_basecolor.jpg
+map_Bump Metal_006_normal.jpg
 newmtl Material.005
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000

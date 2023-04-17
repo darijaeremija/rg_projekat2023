@@ -9,7 +9,9 @@ newmtl Steel
 	Tf 1.0000 1.0000 1.0000 
 	illum 2
 	Ka 0.0000 0.0000 0.0000
-	Kd 0.8471 0.7020 0.3843
+	Kd 0.5871 0.3020 0.01
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Kd old_copp.jpg
+	map_Kd basecolor.jpg
+	map_Bump normal1.jpg
+	map_Ns roughness1.jpg
