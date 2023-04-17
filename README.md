@@ -13,13 +13,15 @@ Ball move
 Change face culling(hide and show gold)
 ## Group A 
 Skybox
-
+## Group B
+Normal mapping
 
 ### Screenshots
 
 ![](screenshots/view1.png)
+![](screenshots/view2.png)
 ![](screenshots/view3.png)
 ![](screenshots/chest1.png)
-
+![](screenshots/chest2.png)
 [Demo video](https://youtu.be/dRPEFoOwT04)
 
