@@ -14,4 +14,4 @@ newmtl Steel
 	Ke 0.0000 0.0000 0.0000
 	map_Kd basecolor.jpg
 	map_Bump normal1.jpg
-	map_Ns roughness1.jpg
+
