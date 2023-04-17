@@ -23,5 +23,5 @@ Normal mapping
 ![](screenshots/view3.png)
 ![](screenshots/chest1.png)
 ![](screenshots/chest2.png)
-[Demo video](https://youtu.be/dRPEFoOwT04)
+[Demo video](https://www.youtube.com/watch?v=DN4zXSe20Bk)
 
